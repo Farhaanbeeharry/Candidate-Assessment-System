@@ -8,3 +8,4 @@ docker run --name candidate-assessment -e POSTGRES_PASSWORD=postgres -e POSTGRES
 
 KEYCLOAK
 docker-compose -f keycloak-postgres.yml up
+where keycloak-postgres.yml is the keyclock config file
