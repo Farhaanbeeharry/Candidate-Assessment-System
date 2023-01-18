@@ -1,9 +1,7 @@
 package ch.elca.candidateassess.rest;
 
-
 import ch.elca.candidateassess.dto.CreateQuestionnaireDto;
 import ch.elca.candidateassess.dto.FilledQuestionnaireDto;
-import ch.elca.candidateassess.dto.QuestionnaireDataDto;
 import ch.elca.candidateassess.dto.QuestionnaireDto;
 import ch.elca.candidateassess.service.QuestionnaireService;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +13,6 @@ import java.util.UUID;
 
 @Transactional
 @RestController
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping("/api/questionnaires")
 public class QuestionnaireController {
 
@@ -41,10 +38,6 @@ public class QuestionnaireController {
         this.questionnaireService.generateQuestionnaire(userQuestionnaireId);
     }
 
-    @GetMapping("getData/{userQuestionnaireId}")
-    public QuestionnaireDataDto getQuestionnaireData(@PathVariable UUID userQuestionnaireId) {
-        return this.questionnaireService.getQuestionnaireData(userQuestionnaireId);
-    }
 
     @GetMapping("getQuestionnaire/{userQuestionnaireId}")
     public FilledQuestionnaireDto getQuestionnaire(@PathVariable UUID userQuestionnaireId) {

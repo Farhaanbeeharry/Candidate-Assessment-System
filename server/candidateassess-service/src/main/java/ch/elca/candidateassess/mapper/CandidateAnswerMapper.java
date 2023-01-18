@@ -24,3 +24,4 @@ public interface CandidateAnswerMapper {
     void mapToQuestionnaireDataForReviewDto(@MappingTarget QuestionnaireDataForReviewDto questionnaireDataForReviewDto, CandidateAnswer candidateAnswer);
 
 }
+

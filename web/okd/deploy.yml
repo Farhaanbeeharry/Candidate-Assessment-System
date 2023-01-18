@@ -1,0 +1,164 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: frontend-deploy-template
+labels:
+  app: ${APP_NAME}-${OKD_APP_ID}
+objects:
+  - apiVersion: apps.openshift.io/v1
+    kind: DeploymentConfig
+    metadata:
+      name: ${APP_NAME}-${FRONTEND_MODULE}-${OKD_APP_ID}
+      labels:
+        app.kubernetes.io/name: ${APP_NAME}-${FRONTEND_MODULE}
+        app.kubernetes.io/instance: ${APP_NAME}-${FRONTEND_MODULE}-${OKD_APP_ID}
+        app.kubernetes.io/component: frontend
+        app.kubernetes.io/part-of: ${APP_NAME}
+        app.openshift.io/runtime: angularjs
+      annotations:
+        app.openshift.io/connects-to: ${APP_NAME}-${BACKEND_MODULE}-${OKD_APP_ID}
+        app.openshift.io/vcs-uri: git://bitbucket.svc.elca.ch/projects/ELCAMULAB/repos/${APP_NAME}
+    spec:
+      replicas: 1
+      strategy:
+        type: Recreate
+      template:
+        metadata:
+          labels:
+            app: ${APP_NAME}-${OKD_APP_ID}
+            name: ${APP_NAME}-${FRONTEND_MODULE}-${OKD_APP_ID}
+          annotations:
+            date: ${FORMATTED_DATE}
+        spec:
+          containers:
+            - name: ${APP_NAME}-${FRONTEND_MODULE}-${FORMATTED_DATE}
+              image: ${OKD_NAMESPACE}-docker.artifactory.svc.elca.ch/${APP_NAME}/${FRONTEND_MODULE}:${VERSION}
+              ports:
+                - containerPort: 8080
+                  protocol: TCP
+              imagePullPolicy: Always
+              volumeMounts:
+                - mountPath: /usr/share/nginx/html/candidate-assessment/assets/conf
+                  name: config-volume
+              resources:
+                limits:
+                  cpu: 500m
+                  memory: 512Mi
+                requests:
+                  cpu: 100m
+                  memory: 256Mi
+              startupProbe:
+                failureThreshold: 30
+                httpGet:
+                  path: /
+                  port: 8080
+                  scheme: HTTP
+                periodSeconds: 10
+                successThreshold: 1
+                timeoutSeconds: 1
+              readinessProbe:
+                failureThreshold: 30
+                httpGet:
+                  path: /
+                  port: 8080
+                  scheme: HTTP
+                initialDelaySeconds: 20
+                periodSeconds: 10
+                successThreshold: 1
+                timeoutSeconds: 1
+              livenessProbe:
+                failureThreshold: 4
+                httpGet:
+                  path: /
+                  port: 8080
+                  scheme: HTTP
+                initialDelaySeconds: 200
+                periodSeconds: 10
+                successThreshold: 1
+                timeoutSeconds: 1
+            - name: nginx-exporter
+              image: docker-remote.artifactory.svc.elca.ch/nginx/nginx-prometheus-exporter:0.9.0
+              args:
+                - '-nginx.scrape-uri=http://localhost:9090/stub_status'
+              resources:
+                limits:
+                  cpu: 500m
+                  memory: 256Mi
+                requests:
+                  cpu: 100m
+                  memory: 128Mi
+          volumes:
+            - configMap:
+                defaultMode: 420
+                name: ${APP_NAME}-${FRONTEND_MODULE}-${OKD_APP_ID}
+              name: config-volume
+  - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: ${APP_NAME}-${FRONTEND_MODULE}-${OKD_APP_ID}
+    data:
+      appConfig.json: |
+        {
+          "baseUrl": "http://${BACKEND_HOST}/api",
+          "keycloakUrl": "http://keycloak-prj-elcamulab.apps.okd.svc.elca.ch/auth",
+          "keycloakRealm": "elca-users",
+          "keycloakClientId": "elca-candidate-assessment"
+        }
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      name: ${APP_NAME}-${FRONTEND_MODULE}-${OKD_APP_ID}
+      labels:
+        name: ${APP_NAME}-${FRONTEND_MODULE}-${OKD_APP_ID}
+    spec:
+      ports:
+        - name: http
+          port: 8080
+      selector:
+        name: ${APP_NAME}-${FRONTEND_MODULE}-${OKD_APP_ID}
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      name: ${APP_NAME}-${FRONTEND_MODULE}-metrics-${OKD_APP_ID}
+      labels:
+        name: ${APP_NAME}-${FRONTEND_MODULE}-metrics-${OKD_APP_ID}
+    spec:
+      ports:
+        - name: http-metrics
+          port: 9113
+      selector:
+        name: ${APP_NAME}-${FRONTEND_MODULE}-metrics-${OKD_APP_ID}
+  - apiVersion: v1
+    kind: Route
+    metadata:
+      name: ${APP_NAME}-${FRONTEND_MODULE}-${OKD_APP_ID}
+    spec:
+      host: ${FRONTEND_HOST}
+      to:
+        kind: Service
+        name: ${APP_NAME}-${FRONTEND_MODULE}-${OKD_APP_ID}
+      port:
+        targetPort: http
+  - apiVersion: monitoring.coreos.com/v1
+    kind: ServiceMonitor
+    metadata:
+      name: front-end-monitor
+    spec:
+      endpoints:
+        - interval: 30s
+          port: http-metrics
+          scheme: http
+      selector:
+        matchLabels:
+          app: ${APP_NAME}-${OKD_APP_ID}
+          name: ${APP_NAME}-${FRONTEND_MODULE}-metrics-${OKD_APP_ID}
+parameters:
+  - name: APP_NAME
+  - name: BACKEND_HOST
+  - name: BACKEND_MODULE
+  - name: FRONTEND_HOST
+  - name: FRONTEND_MODULE
+  - name: OKD_APP_ID
+  - name: OKD_NAMESPACE
+  - name: FORMATTED_DATE
+  - name: VERSION

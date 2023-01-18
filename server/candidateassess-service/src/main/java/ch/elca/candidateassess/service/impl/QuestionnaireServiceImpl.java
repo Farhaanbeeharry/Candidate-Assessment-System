@@ -38,6 +38,7 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
     private final CandidateAnswerRepository candidateAnswerRepository;
     private final UUIDMapper uuidMapper;
 
+
     public QuestionnaireServiceImpl(UserQuestionnaireRepository userQuestionnaireRepository, UserQuestionnaireMapper userQuestionnaireMapper, AnswerMapper answerMapper, QuestionnaireQuestionMapper questionnaireQuestionMapper, UserQuestionnaireSkillRepository userQuestionnaireSkillRepository, QuestionRepository questionRepository, QuestionnaireRepository questionnaireRepository, QuestionnaireQuestionRepository questionnaireQuestionRepository, AnswerRepository answerRepository, QuestionnaireMapper questionnaireMapper, UserQuestionnaireSkillMapper userQuestionnaireSkillMapper, CandidateAnswerRepository candidateAnswerRepository, UUIDMapper uuidMapper) {
 
         this.userQuestionnaireRepository = userQuestionnaireRepository;
@@ -152,42 +153,6 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
         return booleanBuilder.and((qAnswer.question.id.eq(questionId)));
     }
 
-    @Override
-    public QuestionnaireDataDto getQuestionnaireData(UUID userQuestionnaireId) {
-
-        QuestionnaireDataDto questionnaireDataDto = new QuestionnaireDataDto();
-        questionnaireDataDto.setDuration(questionnaireRepository.getById(userQuestionnaireRepository.getById(userQuestionnaireId).getQuestionnaire().getId()).getTotalTime());
-        BooleanBuilder predicate = buildQuestionsCountPredicate(userQuestionnaireRepository.getById(userQuestionnaireId).getQuestionnaire().getId());
-        List<QuestionnaireQuestion> questionnaireQuestions = new ArrayList<QuestionnaireQuestion>();
-        questionnaireQuestionRepository.findAll(predicate).forEach(questionnaireQuestions::add);
-        var numberOfQuestions = questionnaireQuestions.stream().count();
-
-        List<IsAnsweredQuestionDto> isAnsweredQuestionDtos = new ArrayList<>();
-        for (int i = 0; i < numberOfQuestions; i++) {
-            int index = i;
-            int correctIndex = i + 1;
-            BooleanBuilder idPredicate = buildIdPredicate(userQuestionnaireRepository.getById(userQuestionnaireId).getQuestionnaire().getId(), correctIndex);
-            List<QuestionnaireQuestion> questionnaireQuestionList = new ArrayList<QuestionnaireQuestion>();
-            questionnaireQuestionRepository.findAll(idPredicate).forEach(questionnaireQuestionList::add);
-            UUID questionId = questionnaireQuestionList.get(0).getQuestion().getId();
-
-//            BooleanBuilder answerPredicate = buildAnswerPredicate(questionId, userQuestionnaireId);
-//            List<CandidateAnswer> answers = new ArrayList<CandidateAnswer>();
-//            candidateAnswerRepository.findAll(answerPredicate).forEach(answers::add);
-            //when implementing boolean here problem
-            List<CandidateAnswer> answers = candidateAnswerRepository.findAll().stream().filter(x -> x.getQuestion().getId().equals(questionId) && x.getUserQuestionnaire().getId().equals(userQuestionnaireId)).collect(Collectors.toList());
-
-            IsAnsweredQuestionDto isAnsweredQuestionDto = new IsAnsweredQuestionDto();
-            isAnsweredQuestionDto.setAnswered(!answers.isEmpty());
-            isAnsweredQuestionDto.setQuestionNumber(i + 1);
-            isAnsweredQuestionDtos.add(isAnsweredQuestionDto);
-        }
-        questionnaireDataDto.setQuestions(isAnsweredQuestionDtos);
-        questionnaireDataDto.setRemainingTime(userQuestionnaireRepository.getById(userQuestionnaireId).getRemainingTime());
-        QuestionnaireStatusEnum questionnaireStatus = userQuestionnaireRepository.getById(userQuestionnaireId).getStatus();
-        questionnaireDataDto.setQuestionnaireOpen(questionnaireStatus == QuestionnaireStatusEnum.PENDING);
-        return questionnaireDataDto;
-    }
 
     @Override
     public FilledQuestionnaireDto getQuestionnaire(UUID userQuestionnaireId) {
@@ -285,3 +250,4 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
         userQuestionnaireRepository.save(userQuestionnaire);
     }
 }
+

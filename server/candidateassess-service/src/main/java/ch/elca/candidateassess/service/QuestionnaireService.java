@@ -16,7 +16,5 @@ public interface QuestionnaireService {
 
     void customizeQuestionnaire(UUID userQuestionnaireId, List<String>idList);
 
-    QuestionnaireDataDto getQuestionnaireData(UUID userQuestionnaireId);
-
     FilledQuestionnaireDto getQuestionnaire(UUID userQuestionnaireId);
 }

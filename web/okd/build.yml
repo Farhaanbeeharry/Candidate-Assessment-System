@@ -1,0 +1,38 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: front-end-build-template
+labels:
+  app: ${APP_NAME}-${OKD_APP_ID}
+objects:
+  - apiVersion: build.openshift.io/v1
+    kind: BuildConfig
+    metadata:
+      name: ${APP_NAME}-${FRONTEND_MODULE}-${OKD_APP_ID}
+    spec:
+      output:
+        pushSecret:
+          name: artifactory
+        to:
+          kind: DockerImage
+          name: ${OKD_NAMESPACE}-docker.artifactory.svc.elca.ch/${APP_NAME}/${FRONTEND_MODULE}:${VERSION}
+      source:
+        type: Binary
+      strategy:
+        dockerStrategy:
+          pullSecret:
+            name: artifactory
+        type: Docker
+      completionDeadlineSeconds: 600
+      successfulBuildsHistoryLimit: 3
+      failedBuildsHistoryLimit: 3
+parameters:
+  - description: Application name
+    name: APP_NAME
+  - description: Frontend module name
+    name: FRONTEND_MODULE
+  - description: OKD application id
+    name: OKD_APP_ID
+  - description: OKD namespace
+    name: OKD_NAMESPACE
+  - name: VERSION

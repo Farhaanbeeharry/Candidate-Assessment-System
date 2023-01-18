@@ -1,0 +1,25 @@
+kind: Template
+apiVersion: template.openshift.io/v1
+metadata:
+  name: backend-configmap-template
+labels:
+  app: ${APP_NAME}-${OKD_APP_ID}
+objects:
+  - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: ${APP_NAME}-${BACKEND_MODULE}-${OKD_APP_ID}
+    data:
+      SERVER_PORT: "8080"
+      DB_URL: "jdbc:postgresql://postgres/candidate_assessment"
+      JPA_SHOW_SQL: "true"
+      MAIL_HOST: "mailserver"
+      MAIL_PORT: "25"
+      OAUTH2_CLIENT_ID: "elca-candidate-assessment"
+      OAUTH2_JWK_URI: "http://keycloak-prj-elcamulab.apps.okd.svc.elca.ch/auth/realms/elca-users/protocol/openid-connect/certs"
+      FRONTEND_HOST: ${FRONTEND_HOST}
+parameters:
+  - name: APP_NAME
+  - name: BACKEND_MODULE
+  - name: OKD_APP_ID
+  - name: FRONTEND_HOST

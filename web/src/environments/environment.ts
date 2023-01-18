@@ -11,7 +11,7 @@ export const environment = {
     headers: new HttpHeaders({
       'Content-Type': 'application/json',
     }),
-  },
+  }
 };
 
 /*

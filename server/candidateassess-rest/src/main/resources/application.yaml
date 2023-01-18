@@ -1,13 +1,36 @@
-spring:
-  datasource:
-    driver-class-name: org.postgresql.Driver
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-  profiles:
-    active: dev
 server:
   error:
-    include-message: always
     include-binding-errors: always
+    include-message: always
+
+spring:
+  datasource:
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    url: ${DB_URL}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format-sql: true
+    show-sql: ${JPA_SHOW_SQL}
+  mail:
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+  profiles:
+    active: '@springActiveProfiles@'
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          client-id: ${OAUTH2_CLIENT_ID}
+          jwk-set-uri: ${OAUTH2_JWK_URI}
+  sql:
+    init:
+      mode: never
+
+application:
+  security:
+    cross-origin:
+      frontend-host: ${FRONTEND_HOST}

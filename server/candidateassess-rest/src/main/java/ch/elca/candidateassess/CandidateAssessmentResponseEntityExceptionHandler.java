@@ -65,4 +65,5 @@ public class CandidateAssessmentResponseEntityExceptionHandler extends ResponseE
     private ResponseEntity<Object> handleExceptionInternal(Exception ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         return this.handleExceptionInternal(ex, null, headers, status, request);
     }
+
 }

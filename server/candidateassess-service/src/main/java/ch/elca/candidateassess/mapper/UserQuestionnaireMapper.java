@@ -38,8 +38,8 @@ public interface UserQuestionnaireMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdOn", ignore = true)
     @Mapping(target = "comment", ignore = true)
-    @Mapping(target = "cheatCount", ignore = true)
     @Mapping(target = "candidateSelectSkills", ignore = true)
+    @Mapping(target = "cheatCount", ignore = true)
     @Mapping(target = "autoGenerate", ignore = true)
     void mapUpdateUserQuestionnaireDtoToExistingUserQuestionnaire(@MappingTarget UserQuestionnaire userQuestionnaire, UpdateUserQuestionnaireDto updateUserQuestionnaireDto);
 
@@ -68,7 +68,7 @@ public interface UserQuestionnaireMapper {
     @Mapping(target = "marksObtained", source = "userQuestionnaire.marks")
     @Mapping(target = "questions", ignore = true)
     @Mapping(target = "timeTaken", source = "userQuestionnaire.timeTakenToCompleteQuestionnaire")
-    FilledQuestionnaireDto mapToFilledQuestionnaireDto(@MappingTarget FilledQuestionnaireDto filledQuestionnaireDto, UserQuestionnaire userQuestionnaire);
+    void mapToFilledQuestionnaireDto(@MappingTarget FilledQuestionnaireDto filledQuestionnaireDto, UserQuestionnaire userQuestionnaire);
 
     @Mapping(target = "userQuestionnaireId", source = "userQuestionnaire.id")
     void mapToValidateToken(@MappingTarget ValidateTokenDto validateTokenDto, UserQuestionnaire userQuestionnaire);
@@ -95,3 +95,4 @@ public interface UserQuestionnaireMapper {
     void mapSaveReviewedUserQuestionnaireDtoToExistingUserQuestionnaire(@MappingTarget UserQuestionnaire userQuestionnaire, SaveReviewedUserQuestionnaireDto saveReviewedUserQuestionnaireDto);
 
 }
+

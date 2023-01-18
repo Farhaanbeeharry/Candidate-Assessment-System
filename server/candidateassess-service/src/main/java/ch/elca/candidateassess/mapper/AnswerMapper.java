@@ -14,7 +14,7 @@ public interface AnswerMapper {
     @Mapping(target = "createdOn", ignore = true)
     @Mapping(target = "updatedOn", ignore = true)
     @Mapping(target = "id", ignore = true)
-    @Mapping(source = "questionId", target = "question.id")
+    @Mapping(target = "question.id", source = "questionId")
     Answer mapToAnswer(AnswerDto answerDto);
 
     @Mapping(target = "questionId", source = "answer.question.id")

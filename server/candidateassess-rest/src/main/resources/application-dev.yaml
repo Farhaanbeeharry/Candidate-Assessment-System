@@ -1,12 +1,13 @@
-spring:
-  datasource:
-    username: postgres
-    password: postgres
-    url: jdbc:postgresql://localhost:5432/candidate-assessment
-  mail:
-    host: localhost
-    port: 1025
-#    username: elcaassessment@gmail.com
-#    password: ElcaInformationTechnology
-#    properties.mail.smtp.auth: true
-#    properties.mail.smtp.starttls.enable: true
+DB_URL: jdbc:postgresql://localhost:5433/candidate_assessment?serverTimezone=Indian/Mauritius
+DB_USER: postgres
+DB_PASSWORD: password
+
+JPA_SHOW_SQL: true
+
+MAIL_HOST: localhost
+MAIL_PORT: 1025
+
+OAUTH2_CLIENT_ID: elca-candidate-assessment
+OAUTH2_JWK_URI: http://keycloak-prj-elcamulab.apps.okd.svc.elca.ch/auth/realms/elca-users/protocol/openid-connect/certs
+
+FRONTEND_HOST: http://localhost:4200

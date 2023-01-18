@@ -1,6 +1,6 @@
-import { NgModule } from '@angular/core';
+import {APP_INITIALIZER, NgModule, Provider} from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule } from '@angular/common/http';
+import {HttpClientModule, HTTP_INTERCEPTORS, HttpClient,} from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -74,10 +74,44 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { ViewCandidateProfileComponent } from './features/hr/candidate-dashboard/view-candidate-profile/view-candidate-profile.component';
 import { NgApexchartsModule } from "ng-apexcharts";
 import { ViewCandidateQuestionnaireComponent } from './features/hr/candidate-dashboard/view-candidate-questionnaire/view-candidate-questionnaire.component';
-import { LoginComponent } from './features/login/login.component';
+import { CheatDialogComponent } from './features/candidate/questionnaire/cheat-dialog/cheat-dialog/cheat-dialog.component';
 import { SelectQuestionsComponent } from './features/reviewer/select-questions/select-questions/select-questions.component';
 import { CustomizeQuestionnaireDashboardComponent } from './features/reviewer/customize-questionnaire-dashboard/customize-questionnaire-dashboard/customize-questionnaire-dashboard.component';
-import { CheatDialogComponent } from './features/candidate/questionnaire/cheat-dialog/cheat-dialog/cheat-dialog.component';
+import { KeycloakAngularModule,KeycloakService } from 'keycloak-angular';
+import {AppConfigService} from "./shared/service/config/app-config.service";
+
+export const AppConfigurationFactory = (
+  appConfig: AppConfigService) => () => appConfig.loadAppConfig();
+
+export const initializeKeycloak = (keycloak: KeycloakService) => {
+  return () =>
+    keycloak.init({
+      config: {
+        url: 'http://keycloak-prj-elcamulab.apps.okd.svc.elca.ch/auth',
+        realm: 'elca-users',
+        clientId: 'elca-candidate-assessment'
+      },
+      initOptions: {
+        checkLoginIframe: false,
+        checkLoginIframeInterval: 25 //seconds
+      },
+      loadUserProfileAtStartUp: true
+    });
+};
+
+const appConfigProvider: Provider = {
+  provide: APP_INITIALIZER,
+  useFactory: AppConfigurationFactory,
+  multi: true,
+  deps: [AppConfigService, HttpClient]
+};
+
+const keycloakProvider: Provider = {
+  provide: APP_INITIALIZER,
+  useFactory: initializeKeycloak,
+  multi: true,
+  deps: [KeycloakService]
+}
 
 @NgModule({
   declarations: [
@@ -116,7 +150,6 @@ import { CheatDialogComponent } from './features/candidate/questionnaire/cheat-d
     ReviewDashboardComponent,
     ViewCandidateQuestionnaireComponent,
     ViewCandidateProfileComponent,
-    LoginComponent,
     SelectQuestionsComponent,
     CustomizeQuestionnaireDashboardComponent,
     CheatDialogComponent,
@@ -164,8 +197,13 @@ import { CheatDialogComponent } from './features/candidate/questionnaire/cheat-d
     TextFieldModule,
     MatTooltipModule,
     NgApexchartsModule,
+    KeycloakAngularModule,
   ],
-  providers: [],
+  providers: [
+    AppConfigService,
+    appConfigProvider,
+    keycloakProvider
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule { }

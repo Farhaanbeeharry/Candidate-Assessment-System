@@ -7,9 +7,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 import { SkillDto, SkillLevelEnum, UserQuestionnaireSkillDto } from 'src/app/shared/model';
-import { QuestionnaireService } from 'src/app/shared/service/api/questionnaire/questionnaire.service';
-import { SkillService } from 'src/app/shared/service/api/skill/skill.service';
-import { UserQuestionnaireService } from 'src/app/shared/service/api/user-questionnaire/user-questionnaire.service';
+import { PublicService } from 'src/app/shared/service/api/public/public.service';
 import { UtilsService } from 'src/app/shared/service/utils/utils.service';
 
 @Component({
@@ -33,10 +31,8 @@ export class SelectSkillsComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private skillService: SkillService,
-    private userQuestionnaireService: UserQuestionnaireService,
+    private publicService: PublicService,
     private utilService: UtilsService,
-    private questionnaireService: QuestionnaireService
   ) {
     if (!(this.route.snapshot.params['id'] === undefined))
       this.userQuestionnaireId = this.route.snapshot.params['id'];
@@ -45,7 +41,7 @@ export class SelectSkillsComponent implements OnInit {
   ngOnInit(): void {
     this.checkId();
     this.getQuestionnaireType();
-    this.skillService.getSkills().subscribe((skills) => {
+    this.publicService.getSkills().subscribe((skills) => {
       skills.forEach((skill) => (skill.level = 1));
       this.skills = skills;
       this.filteredSkills = skills;
@@ -54,13 +50,13 @@ export class SelectSkillsComponent implements OnInit {
   }
 
   public getQuestionnaireType(): void {
-    this.userQuestionnaireService.getQuestionnaireType(this.userQuestionnaireId).subscribe((autogenerate) =>
+    this.publicService.getQuestionnaireType(this.userQuestionnaireId).subscribe((autogenerate) =>
       this.autoGenerate = autogenerate
     )
   }
 
   public checkId(): void {
-    this.userQuestionnaireService.validateId(this.userQuestionnaireId).subscribe({
+    this.publicService.validateId(this.userQuestionnaireId).subscribe({
       next: () => {
       },
       error: (error) => {
@@ -70,7 +66,7 @@ export class SelectSkillsComponent implements OnInit {
   }
 
   private checkCandidateSelectSkillsStatus(): void {
-    this.userQuestionnaireService.getCandidateSelectSkillsStatus(this.userQuestionnaireId).subscribe((dto) =>
+    this.publicService.getCandidateSelectSkillsStatus(this.userQuestionnaireId).subscribe((dto) =>
       this.candidateSelectSkills = dto.candidateSelectSkills
     );
   }
@@ -181,12 +177,12 @@ export class SelectSkillsComponent implements OnInit {
     this.isContinueButtonDisabled = true;
     this.isResetButtonDisabled = true;
 
-    this.skillService.submitSkills(body).subscribe({
+    this.publicService.submitSkills(body).subscribe({
       next: (result) => {
         this.loading = false;
         this.checkButtonStatus();
         if (this.autoGenerate) {
-          this.questionnaireService.generateQuestionnaire(this.userQuestionnaireId).subscribe(() => {
+          this.publicService.generateQuestionnaire(this.userQuestionnaireId).subscribe(() => {
             this.loading = false;
             this.checkButtonStatus();
             if (this.candidateSelectSkills) {

@@ -20,3 +20,4 @@ public interface PersonMapper {
     void mapToLoginDto(@MappingTarget LoginDto loginDto, Person person);
 
 }
+

@@ -27,22 +27,5 @@ public class UserQuestionnaireSkillServiceImpl implements UserQuestionnaireSkill
         this.userQuestionnaireSkillMapper = userQuestionnaireSkillMapper;
     }
 
-    @Override
-    public void saveUserQuestionnaireSkill(CreateUserQuestionnaireSkillDto createUserQuestionnaireSkillDto) {
-        UserQuestionnaire userQuestionnaire = userQuestionnaireRepository.getById(createUserQuestionnaireSkillDto.getUserQuestionnaireId());
-        createUserQuestionnaireSkillDto.getSkills().forEach(skill -> {
-            Skill userSelectedSkill = skillRepository.getById(skill.getId());
-            UserQuestionnaireSkill userQuestionnaireSkill = new UserQuestionnaireSkill();
-            userQuestionnaireSkill.setUserQuestionnaire(userQuestionnaire);
-            userQuestionnaireSkill.setSkill(userSelectedSkill);
-            SkillLevelEnum selectedSkillLevel = SkillLevelEnum.NOVICE;
-            if (skill.getLevel().equals(SkillLevelEnum.BEGINNER)) selectedSkillLevel = SkillLevelEnum.BEGINNER;
-            else if (skill.getLevel().equals(SkillLevelEnum.PROFICIENT)) selectedSkillLevel = SkillLevelEnum.PROFICIENT;
-            else if (skill.getLevel().equals(SkillLevelEnum.ADVANCED)) selectedSkillLevel = SkillLevelEnum.ADVANCED;
-            else if (skill.getLevel().equals(SkillLevelEnum.EXPERT)) selectedSkillLevel = SkillLevelEnum.EXPERT;
-            userQuestionnaireSkill.setLevel(selectedSkillLevel);
-            userQuestionnaireSkillRepository.save(userQuestionnaireSkill);
-        });
-    }
 
 }

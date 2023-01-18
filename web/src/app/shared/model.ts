@@ -366,3 +366,9 @@ export class DashboardDto {
   numberOfMultipleChoiceQuestions!: number;
   numberOfMultipleAnswersQuestions!: number;
 }
+
+export interface AppConfigModel {
+  keycloakUrl: string;
+  keycloakRealm: string;
+  keycloakClientId: string;
+}

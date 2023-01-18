@@ -30,20 +30,17 @@ export class QuestionnaireService {
   }
 
 
-  public getQuestionnaireData(userQuestionnaireId: string): Observable<Questionnaire> {
-    const url = `${environment.apiUrl}/questionnaires/getData/${userQuestionnaireId}`;
-    return this.http.get<Questionnaire>(url, environment.httpOptions);
-  }
+
 
   public generateQuestionnaire(userQuestionnaireId: string): Observable<any> {
     const url = `${environment.apiUrl}/questionnaires/generate?userQuestionnaireId=${userQuestionnaireId}`;
     return this.http.post<any>(url, environment.httpOptions);
   }
 
-  public customizeQuestionnaire(userQuestionnaireId: string, idList: string[]): Observable<any> {
+  public customizeQuestionnaire(userQuestionnaireId: string, idList : string[]): Observable<any> {
     console.log("lolo0");
     const url = `${environment.apiUrl}/questionnaires/customizeQuestionnaire/${userQuestionnaireId}`;
-    return this.http.post<any>(url, idList, environment.httpOptions);
+    return this.http.post<any>(url, idList ,environment.httpOptions);
   }
 
   public getQuestionnaire(userQuestionnaireId: string): Observable<FilledQuestionnaireDto> {

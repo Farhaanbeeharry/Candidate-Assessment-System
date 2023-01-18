@@ -10,7 +10,6 @@ import java.util.List;
 
 @Transactional
 @RestController
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping("/api/questionnaire-questions")
 public class QuestionnaireQuestionController {
 

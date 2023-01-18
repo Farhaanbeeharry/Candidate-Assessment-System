@@ -3,9 +3,6 @@ package ch.elca.candidateassess.rest;
 import ch.elca.candidateassess.dto.*;
 import ch.elca.candidateassess.persistence.enumeration.QuestionTypeEnum;
 import ch.elca.candidateassess.persistence.enumeration.SkillLevelEnum;
-import ch.elca.candidateassess.dto.CreateQuestionDto;
-import ch.elca.candidateassess.dto.QuestionDto;
-import ch.elca.candidateassess.dto.SaveQuestionDto;
 import ch.elca.candidateassess.service.QuestionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
@@ -17,7 +14,6 @@ import java.util.UUID;
 
 @Transactional
 @RestController
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping("/api/questions")
 public class QuestionController {
 
@@ -54,13 +50,13 @@ public class QuestionController {
 
     @GetMapping("/search")
     public Page<ViewQuestionDto> findQuestionByContent(@RequestParam(value = "questionContent", required = false) String questionContent,
-                                                   @RequestParam(value= "selectedSkillId", required = false) UUID selectedSkillId,
+                                                       @RequestParam(value = "selectedSkillId", required = false) UUID selectedSkillId,
                                                        @RequestParam(value = "selectedSkillLevel", required = false) SkillLevelEnum selectedSkillLevel,
                                                        @RequestParam(value = "selectedQuestionType", required = false) QuestionTypeEnum selectedQuestionType,
                                                        @RequestParam(value = "sortOrder") String sortOrder,
-                                                   @RequestParam(value = "sortBy") String sortBy,
-                                                   @RequestParam(value = "pageNumber") Integer pageNumber,
-                                                   @RequestParam(value = "pageSize") Integer pageSize) {
+                                                       @RequestParam(value = "sortBy") String sortBy,
+                                                       @RequestParam(value = "pageNumber") Integer pageNumber,
+                                                       @RequestParam(value = "pageSize") Integer pageSize) {
         Sort sort = Sort.by("DESC".equals(sortOrder) ? Sort.Direction.DESC : Sort.Direction.ASC, sortBy);
         return questionService.findQuestionByContent(questionContent, selectedSkillId, selectedSkillLevel, selectedQuestionType, sort, pageNumber, pageSize);
     }
@@ -72,7 +68,7 @@ public class QuestionController {
 
 
     @PutMapping("/{questionId}")
-    public  void updateQuestion(@PathVariable("questionId") UUID questionId, @RequestBody EditQuestionDto editQuestionDto) {
+    public void updateQuestion(@PathVariable("questionId") UUID questionId, @RequestBody EditQuestionDto editQuestionDto) {
         questionService.updateQuestion(questionId, editQuestionDto);
     }
 

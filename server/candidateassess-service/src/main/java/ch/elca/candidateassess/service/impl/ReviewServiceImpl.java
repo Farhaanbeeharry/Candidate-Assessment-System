@@ -62,24 +62,24 @@ public class ReviewServiceImpl implements ReviewService {
 
 
     @Override
-    public Page<CandidateReviewDto> getUserQuestionnaireData(Sort sort, Integer pageNumber, Integer pageSize, UUID personId) {
+    public Page<CandidateReviewDto> getUserQuestionnaireData(Sort sort, Integer pageNumber, Integer pageSize, String personEmail) {
         PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, sort);
-        BooleanBuilder reviewPredicate = buildPredicate(personId);
+        BooleanBuilder reviewPredicate = buildPredicate(personEmail);
         Page<Review> reviews = reviewRepository.findAll(reviewPredicate, pageRequest);
         Page<CandidateReviewDto> candidateReviewDtos = reviews.map(review -> candidateMapper.mapToCandidateReviewDto(review.getUserQuestionnaire()));
         return candidateReviewDtos;
     }
 
     @Override
-    public Page<CandidateReviewDto> searchByCandidateName(String candidateName, Sort sort, Integer pageNumber, Integer pageSize, UUID personId) {
-        Page<CandidateReviewDto> candidateReviewDtos = getUserQuestionnaireData(sort, pageNumber, pageSize, personId);
+    public Page<CandidateReviewDto> searchByCandidateName(String candidateName, Sort sort, Integer pageNumber, Integer pageSize, String personEmail) {
+        Page<CandidateReviewDto> candidateReviewDtos = getUserQuestionnaireData(sort, pageNumber, pageSize, personEmail);
         return new PageImpl<CandidateReviewDto>(candidateReviewDtos.stream().filter(candidateReviewDto -> candidateReviewDto.getFirstName().concat(" ").concat(candidateReviewDto.getLastName()).toLowerCase().contains(candidateName.toLowerCase(Locale.ROOT)) || candidateReviewDto.getLastName().concat(" ").concat(candidateReviewDto.getFirstName()).toLowerCase().contains(candidateName.toLowerCase(Locale.ROOT))).collect(Collectors.toList()));
     }
 
-    private BooleanBuilder buildPredicate(UUID personId) {
+    private BooleanBuilder buildPredicate(String personEmail) {
         var qReview = QReview.review;
         BooleanBuilder booleanBuilder = new BooleanBuilder();
-        return booleanBuilder.and(qReview.person.id.eq(personId)).and(qReview.userQuestionnaire.status.eq(QuestionnaireStatusEnum.UNDER_REVIEW));
+        return booleanBuilder.and(qReview.person.emailAddress.eq(personEmail)).and(qReview.userQuestionnaire.status.eq(QuestionnaireStatusEnum.UNDER_REVIEW));
     }
 
 }

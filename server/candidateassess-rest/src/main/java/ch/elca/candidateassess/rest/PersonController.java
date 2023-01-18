@@ -1,18 +1,18 @@
 package ch.elca.candidateassess.rest;
 
-import ch.elca.candidateassess.dto.CredentialsDto;
-import ch.elca.candidateassess.dto.LoginDto;
 import ch.elca.candidateassess.dto.PersonDto;
 import ch.elca.candidateassess.dto.ReviewerDto;
 import ch.elca.candidateassess.service.PersonService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.util.List;
 
 @Transactional
 @RestController
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping("/api/persons")
 public class PersonController {
 
@@ -32,9 +32,15 @@ public class PersonController {
         return personService.getReviewersByName(reviewerName);
     }
 
-    @PostMapping("/validateCredentials")
-    public LoginDto validateCredentials(@RequestBody CredentialsDto credentialsDto) {
-        return personService.validateCredentials(credentialsDto);
+    //
+//    @PostMapping("/validateCredentials")
+//    public LoginDto validateCredentials(@RequestBody CredentialsDto credentialsDto) {
+//        return personService.validateCredentials(credentialsDto);
+//    }
+    @PostMapping(value = "/logout")
+    public ResponseEntity<String> logout(HttpServletRequest request) throws ServletException {
+        request.logout();
+        return ResponseEntity.ok("redirect:/");
     }
 
     @PostMapping

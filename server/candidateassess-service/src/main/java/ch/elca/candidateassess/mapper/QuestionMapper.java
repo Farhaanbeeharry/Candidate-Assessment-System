@@ -25,6 +25,7 @@ public interface QuestionMapper {
     @Mapping(target = "type", source = "questionType")
     Question mapToQuestionFromEditQuestionDto(EditQuestionDto editQuestionDto);
 
+
     @Mapping(target = "createdOn", ignore = true)
     @Mapping(target = "updatedOn", ignore = true)
     @Mapping(target = "questionEnglishFiltered", ignore = true)

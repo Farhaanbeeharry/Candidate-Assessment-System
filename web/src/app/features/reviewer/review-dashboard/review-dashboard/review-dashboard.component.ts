@@ -5,7 +5,6 @@ import { MatTableDataSource } from '@angular/material/table';
 import * as moment from 'moment';
 import { ReviewService } from 'src/app/shared/service/api/review/review.service';
 
-
 @Component({
   selector: 'app-review-dashboard',
   templateUrl: './review-dashboard.component.html',
@@ -13,14 +12,14 @@ import { ReviewService } from 'src/app/shared/service/api/review/review.service'
 })
 export class ReviewDashboardComponent implements OnInit {
 
-  constructor(private reviewService: ReviewService,) { }
+  constructor(private reviewService: ReviewService) { }
 
   public totalElements!: number;
   public pageSizeOptions: number[] = [];
   public candidates: any[] = [];
   public dataSource!: any;
   public searchValue!: string;
-  public personId!: string;
+  public personEmail!: any;
 
   displayedColumns: string[] = [
     'userQuestionnaire.firstName',
@@ -56,7 +55,7 @@ export class ReviewDashboardComponent implements OnInit {
         this.sortBy,
         this.pageNumber,
         this.pageSize,
-        this.personId,
+        this.personEmail,
       )
       .subscribe((data) => {
         this.candidates = data.content;
@@ -101,15 +100,10 @@ export class ReviewDashboardComponent implements OnInit {
   }
 
   public getAllUserQuestionnaires(): void {
-    const personId = localStorage.getItem('personId');
-
-    if (personId != undefined) {
-      this.personId = personId;
-    }
 
     this.reviewService
       .getUserQuestionnaireData(
-        this.personId,
+        this.personEmail,
         this.sortOrder,
         this.sortBy,
         this.pageNumber,

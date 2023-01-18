@@ -16,8 +16,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.security.RolesAllowed;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static ch.elca.candidateassess.enumeration.Role.ROLE_HR;
 
 @Service
 public class CandidateServiceImpl implements CandidateService {
@@ -47,6 +50,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
+    @RolesAllowed({ROLE_HR})
     public Page<CandidateDto> getCandidates(Sort sort, Integer pageNumber, Integer pageSize) {
         PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, sort);
         BooleanBuilder candidatePredicate = buildCandidatePredicate();
@@ -102,27 +106,6 @@ public class CandidateServiceImpl implements CandidateService {
         return candidates;
     }
 
-    private BooleanBuilder buildCandidatesForCustomizedQuestionnairesPredicate(UUID personId) {
-        var qReview = QReview.review;
-        BooleanBuilder booleanBuilder = new BooleanBuilder();
-        return booleanBuilder.and(qReview.person.id.eq(personId))
-                .and(qReview.userQuestionnaire.userArchived.eq(false))
-                .and(qReview.userQuestionnaire.status.eq(QuestionnaireStatusEnum.QUESTIONNAIRE_NOT_GENERATED))
-                .and(qReview.userQuestionnaire.autoGenerate.eq(false));
-    }
-
-    private BooleanBuilder buildSearchCandidatesForCustomizedQuestionnairesPredicate(UUID personId, String candidateName) {
-        var qReview = QReview.review;
-        BooleanBuilder booleanBuilder = new BooleanBuilder();
-        return booleanBuilder.and(qReview.person.id.eq(personId))
-                .and(qReview.userQuestionnaire.userArchived.eq(false))
-                .and(qReview.userQuestionnaire.status.eq(QuestionnaireStatusEnum.QUESTIONNAIRE_NOT_GENERATED))
-                .and(qReview.userQuestionnaire.autoGenerate.eq(false))
-                .and((qReview.userQuestionnaire.firstName.concat(" ").concat(qReview.userQuestionnaire.lastName).toLowerCase().contains(candidateName.toLowerCase(Locale.ROOT)))
-                        .or(qReview.userQuestionnaire.lastName.concat(" ").concat(qReview.userQuestionnaire.firstName).toLowerCase().contains(candidateName.toLowerCase(Locale.ROOT))));
-
-    }
-
     @Override
     public Page<CandidateDto> searchCandidatesForCustomizedQuestionnaires(UUID personId, String candidateName, Sort sort, Integer pageNumber, Integer pageSize) {
         PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, sort);
@@ -151,6 +134,27 @@ public class CandidateServiceImpl implements CandidateService {
         return candidates;
     }
 
+    private BooleanBuilder buildCandidatesForCustomizedQuestionnairesPredicate(UUID personId) {
+        var qReview = QReview.review;
+        BooleanBuilder booleanBuilder = new BooleanBuilder();
+        return booleanBuilder.and(qReview.person.id.eq(personId))
+                .and(qReview.userQuestionnaire.userArchived.eq(false))
+                .and(qReview.userQuestionnaire.status.eq(QuestionnaireStatusEnum.QUESTIONNAIRE_NOT_GENERATED))
+                .and(qReview.userQuestionnaire.autoGenerate.eq(false));
+    }
+
+    private BooleanBuilder buildSearchCandidatesForCustomizedQuestionnairesPredicate(UUID personId, String candidateName) {
+        var qReview = QReview.review;
+        BooleanBuilder booleanBuilder = new BooleanBuilder();
+        return booleanBuilder.and(qReview.person.id.eq(personId))
+                .and(qReview.userQuestionnaire.userArchived.eq(false))
+                .and(qReview.userQuestionnaire.status.eq(QuestionnaireStatusEnum.QUESTIONNAIRE_NOT_GENERATED))
+                .and(qReview.userQuestionnaire.autoGenerate.eq(false))
+                .and((qReview.userQuestionnaire.firstName.concat(" ").concat(qReview.userQuestionnaire.lastName).toLowerCase().contains(candidateName.toLowerCase(Locale.ROOT)))
+                        .or(qReview.userQuestionnaire.lastName.concat(" ").concat(qReview.userQuestionnaire.firstName).toLowerCase().contains(candidateName.toLowerCase(Locale.ROOT))));
+
+    }
+
     @Override
     public List<CandidatesWhoAreNotAssignedInterviewDateDto> getCandidatesWhoAreNotAssignedInterviewDate() {
         BooleanBuilder noInterviewCandidatePredicate = buildNoInterviewCandidatePredicate();
@@ -172,6 +176,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
+    @RolesAllowed({ROLE_HR})
     public List<CandidatesWhoAreNotAssignedInterviewDateDto> findCandidatesWhoAreNotAssignedInterviewDateByName(String candidateName) {
         BooleanBuilder predicate = buildSearchCandidatesWhoAreNotAssignedInterviewDatePredicate(candidateName);
         List<UserQuestionnaire> userQuestionnaires = new ArrayList<UserQuestionnaire>();
@@ -219,6 +224,7 @@ public class CandidateServiceImpl implements CandidateService {
 
 
     @Override
+    @RolesAllowed({ROLE_HR})
     public Page<CandidateDto> findCandidatesByName(String candidateName, Sort sort, Integer pageNumber, Integer pageSize) {
         PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, sort);
         BooleanBuilder predicate = buildSearchPredicate(candidateName);
@@ -258,6 +264,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
+    @RolesAllowed({ROLE_HR})
     public void markCandidateAsArchived(String candidateId) {
         userQuestionnaireRepository.findById(uuidMapper.mapToUUID(candidateId)).ifPresentOrElse(candidate -> {
             candidate.setUserArchived(true);

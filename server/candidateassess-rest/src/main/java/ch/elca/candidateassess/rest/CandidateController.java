@@ -15,7 +15,6 @@ import java.util.UUID;
 
 @Transactional
 @RestController
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping("/api/candidates")
 public class CandidateController {
 
@@ -37,9 +36,9 @@ public class CandidateController {
     @GetMapping("/customizeQuestionnaire/{personId}")
     public Page<CandidateDto> getCandidatesForCustomizedQuestionnaires(@PathVariable("personId") UUID personId,
                                                                        @RequestParam(value = "sortOrder") String sortOrder,
-                                            @RequestParam(value = "sortBy") String sortBy,
-                                            @RequestParam(value = "pageNumber") Integer pageNumber,
-                                            @RequestParam(value = "pageSize") Integer pageSize) {
+                                                                       @RequestParam(value = "sortBy") String sortBy,
+                                                                       @RequestParam(value = "pageNumber") Integer pageNumber,
+                                                                       @RequestParam(value = "pageSize") Integer pageSize) {
         Sort sort = Sort.by("DESC".equals(sortOrder) ? Sort.Direction.DESC : Sort.Direction.ASC, sortBy);
         return candidateService.getCandidatesForCustomizedQuestionnaires(personId, sort, pageNumber, pageSize);
     }
@@ -47,10 +46,10 @@ public class CandidateController {
     @GetMapping("/customizeQuestionnaire/{personId}/search")
     public Page<CandidateDto> searchCandidatesForCustomizedQuestionnaires(@PathVariable("personId") UUID personId,
                                                                           @RequestParam(value = "candidateName", required = false) String candidateName,
-                                                                       @RequestParam(value = "sortOrder") String sortOrder,
-                                                                       @RequestParam(value = "sortBy") String sortBy,
-                                                                       @RequestParam(value = "pageNumber") Integer pageNumber,
-                                                                       @RequestParam(value = "pageSize") Integer pageSize) {
+                                                                          @RequestParam(value = "sortOrder") String sortOrder,
+                                                                          @RequestParam(value = "sortBy") String sortBy,
+                                                                          @RequestParam(value = "pageNumber") Integer pageNumber,
+                                                                          @RequestParam(value = "pageSize") Integer pageSize) {
         Sort sort = Sort.by("DESC".equals(sortOrder) ? Sort.Direction.DESC : Sort.Direction.ASC, sortBy);
         return candidateService.searchCandidatesForCustomizedQuestionnaires(personId, candidateName, sort, pageNumber, pageSize);
     }
